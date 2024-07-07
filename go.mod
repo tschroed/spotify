@@ -1,4 +1,4 @@
-module github.com/zmb3/spotify/v2
+module github.com/tschroed/spotify/v2
 
 go 1.16
 
