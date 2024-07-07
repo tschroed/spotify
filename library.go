@@ -1,7 +1,9 @@
 package spotify
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -71,11 +73,17 @@ func (c *Client) modifyLibrary(ctx context.Context, typ string, add bool, ids ..
 		return errors.New("spotify: this call supports 1 to 50 IDs per call")
 	}
 	spotifyURL := fmt.Sprintf("%sme/%s?ids=%s", c.baseURL, typ, strings.Join(toStringSlice(ids), ","))
+	m := make(map[string]interface{})
+	m["ids"] = ids
+	body, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
 	method := "DELETE"
 	if add {
 		method = "PUT"
 	}
-	req, err := http.NewRequestWithContext(ctx, method, spotifyURL, nil)
+	req, err := http.NewRequestWithContext(ctx, method, spotifyURL, bytes.NewReader(body))
 	if err != nil {
 		return err
 	}
